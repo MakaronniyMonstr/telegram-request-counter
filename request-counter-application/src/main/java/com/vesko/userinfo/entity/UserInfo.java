@@ -23,6 +23,9 @@ public class UserInfo extends BaseEntity {
     @Column(name = "chat_id", unique = true, nullable = false)
     private String chatId;
 
+    @Column(name = "username", unique = true, nullable = false)
+    private String username;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
