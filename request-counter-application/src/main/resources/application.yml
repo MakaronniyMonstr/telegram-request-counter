@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    database: postgresql
+  datasource:
+    url: jdbc:postgresql://localhost:5432/request_counter_service_db
+    username: root
+    password: root
+    driver-class-name: org.postgresql.Driver
