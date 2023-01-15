@@ -12,14 +12,23 @@
     <artifactId>request-counter-application</artifactId>
 
     <properties>
+        <telegrambots.version>6.4.0</telegrambots.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
-            <version>6.4.0</version>
+            <version>${telegrambots.version}</version>
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

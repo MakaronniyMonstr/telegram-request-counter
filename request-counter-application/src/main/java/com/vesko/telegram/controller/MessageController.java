@@ -41,7 +41,7 @@ public class MessageController {
                     return v;
                 })
                 .add(echoMessageRequest);
-        log.info("Received and saved echo message from " + username);
+        log.info("Received and saved echo for {} message from {}", delay, username);
         Thread.sleep(delay);
         namedMessageSets.get(username)
                 .remove(echoMessageRequest);
