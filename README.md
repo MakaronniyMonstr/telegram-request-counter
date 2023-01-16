@@ -22,6 +22,6 @@ docker-compose -f .\dev-container\src\main\resources\docker-compose.yml up
 
 ````\
 mvn -pl request-counter-application -am package
-java -jar .\request-counter-application\target\request-counter-application-1.0-SNAPSHOT.jar --bot_key=328265424:AAHy-VZ22RFGT-Pi_9jNOe7t7BPfJhZhqQY --default_delay=1000
+java -jar .\request-counter-application\target\request-counter-application-1.0-SNAPSHOT.jar --bot_key=key --default_delay=1000
 
 ````
