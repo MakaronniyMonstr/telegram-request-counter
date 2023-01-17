@@ -22,7 +22,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED, readOnly = true)
     @Override
-    public UserInfoDto findBy(String username) {
+    public UserInfoDto findBy(String username) throws ResourceNotFoundException {
         var userInfo = userInfoRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(username));
         return userInfoMapper.toDto(userInfo);
@@ -30,7 +30,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     @Override
-    public UserInfoDto getAndIncrementMessageCounterBy(String username) {
+    public UserInfoDto getAndIncrementMessageCounterBy(String username) throws ResourceNotFoundException {
         notNull(username, "Username must not be null");
 
         UserInfo userInfo = userInfoRepository.findByUsernameWithWriteLock(username)

@@ -18,6 +18,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.vesko.telegram.parser.TelegramCommand.empty;
+
 @Slf4j
 @Service
 public class HandledCommandService implements CommandService {
@@ -27,7 +29,7 @@ public class HandledCommandService implements CommandService {
     public HandledCommandService(List<CommandHandler> commandHandlers, TelegramCommandParser commandParser) {
         this.commandHandlerMap = commandHandlers.stream()
                 .collect(Collectors.toConcurrentMap(
-                        CommandHandler::getCommand,
+                        handler -> handler.getCommand().command(),
                         Function.identity()
                 ));
         this.commandParser = commandParser;
@@ -38,18 +40,28 @@ public class HandledCommandService implements CommandService {
         var message = update.getMessage();
         if (message != null && message.hasText()) {
             var text = message.getText();
+
             try {
                 var command = commandParser.parseCommand(text);
-                resolveCommandHandler(command)
-                        .orElseThrow(CommandNotFoundException::new)
-                        .onCommand(bot, update);
+                executeCommand(bot, update, command);
             } catch (NotCommandException e) {
-                log.info("Message [{}] is not a valid command", text);
-            } catch (CommandNotFoundException e) {
-                log.info("Message [{}] has unknown command", text);
-            } catch (TelegramApiException e) {
-                log.error("Message can not be delivered", e);
+                executeCommand(bot, update, empty());
             }
+        }
+    }
+
+    private void executeCommand(DefaultAbsSender bot, Update update, TelegramCommand command) {
+        var message = update.getMessage();
+        var text = message.getText();
+
+        try {
+            resolveCommandHandler(command)
+                    .orElseThrow(CommandNotFoundException::new)
+                    .onCommand(bot, update);
+        } catch (CommandNotFoundException e) {
+            log.info("Message [{}] has unknown command", text);
+        } catch (TelegramApiException e) {
+            log.error("Message can not be delivered", e);
         }
     }
 

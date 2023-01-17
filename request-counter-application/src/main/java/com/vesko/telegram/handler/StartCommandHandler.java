@@ -1,5 +1,6 @@
 package com.vesko.telegram.handler;
 
+import com.vesko.telegram.parser.TelegramCommand;
 import com.vesko.userinfo.exception.UserAlreadyExistsException;
 import com.vesko.userinfo.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Component
 @RequiredArgsConstructor
 public class StartCommandHandler implements CommandHandler {
-    public static final String START = "/start";
+    private static final TelegramCommand START = new TelegramCommand("/start");
     private final UserInfoService userInfoService;
 
     @Override
-    public String getCommand() {
+    public TelegramCommand getCommand() {
         return START;
     }
 
@@ -32,7 +33,7 @@ public class StartCommandHandler implements CommandHandler {
             userInfoService.createUserInfo(chatId, userName);
             bot.execute(new SendMessage(chatId, "Пользователь " + userName + " , я тебя запомнил!"));
         } catch (UserAlreadyExistsException e) {
-            bot.execute(new SendMessage(chatId, "Пользователь " + userName + " , я тебя знаю!"));
+            bot.execute(new SendMessage(chatId, "Пользователь " + userName + " , я тебя уже знаю!"));
         }
     }
 }

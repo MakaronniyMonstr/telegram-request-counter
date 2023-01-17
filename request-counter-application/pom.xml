@@ -13,6 +13,7 @@
 
     <properties>
         <telegrambots.version>6.4.0</telegrambots.version>
+        <retrofit.version>2.9.0</retrofit.version>
     </properties>
 
     <dependencies>
@@ -20,6 +21,16 @@
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots</artifactId>
             <version>${telegrambots.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${retrofit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-jackson</artifactId>
+            <version>${retrofit.version}</version>
         </dependency>
     </dependencies>
 

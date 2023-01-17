@@ -14,46 +14,38 @@ import org.springframework.web.bind.annotation.RestController;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MessageController {
-    private final ConcurrentMap<String, HashSet<EchoMessageRequest>> namedMessageSets = new ConcurrentHashMap<>();
     private final EchoBot echoBot;
     private final UserInfoService userInfoService;
     private final ConfigurationService configurationService;
+    private final ScheduledExecutorService scheduledExecutorService;
 
     @PostMapping("/receiveEchoMessage")
-    public EchoMessageResponse receiveEchoMessage(@Validated @RequestBody EchoMessageRequest echoMessageRequest) throws InterruptedException {
+    public EchoMessageResponse receiveEchoMessage(@Validated @RequestBody EchoMessageRequest echoMessageRequest) throws InterruptedException, ExecutionException {
         var delay = configurationService.getDelay();
         var username = echoMessageRequest.getTargetUsername();
         var userInfoDto = userInfoService.getAndIncrementMessageCounterBy(username);
         var messageCount = userInfoDto.messageCount();
 
-        namedMessageSets.compute(username, (k, v) -> {
-                    if (v == null) {
-                        v = new HashSet<>();
-                    }
-                    return v;
-                })
-                .add(echoMessageRequest);
-        log.info("Received and saved echo for {} message from {}", delay, username);
-        Thread.sleep(delay);
-        namedMessageSets.get(username)
-                .remove(echoMessageRequest);
-        log.info("Removes echo message from " + username);
-
-        try {
-            echoBot.execute(new SendMessage(userInfoDto.chatId(), echoMessageRequest.getMessage() + " " + messageCount));
-            Thread.sleep(delay);
-            log.info("Sent echo message");
-            return new EchoMessageResponse(true, messageCount);
-        } catch (TelegramApiException e) {
-            return new EchoMessageResponse(false, messageCount);
-        }
+        return scheduledExecutorService.schedule(() -> {
+                            try {
+                                // Пытаемся отправить echo message обратно telegram пользователю
+                                echoBot.execute(new SendMessage(userInfoDto.chatId(), echoMessageRequest.getMessage() + " " + messageCount));
+                                // В случае успешной отправки сообщения
+                                return new EchoMessageResponse(true, messageCount);
+                            } catch (TelegramApiException e) {
+                                // В случае, если не удалось отправить сообщение
+                                return new EchoMessageResponse(false, messageCount);
+                            }
+                        }, delay, TimeUnit.MILLISECONDS
+                )
+                .get();
     }
 }

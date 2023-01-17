@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Обаботчик ошибок с форматированным выводом
+ */
 @RestControllerAdvice
 public class ExceptionAdviceController extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)

@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConfigurationController {
     private final ConfigurationService configurationService;
 
+    /**
+     * @param queueDelayDto Новое значение конфигурации.
+     *                      Для значения задержки допустимы значения [0;∞). Поддерживается валидация и
+     *                      форматированный вывод ошибки.
+     */
     @PostMapping("/updateQueueDelay")
     public void updateQueueDelay(@Valid @RequestBody QueueDelayDto queueDelayDto) {
         configurationService.setDelay(queueDelayDto.getDelay());

@@ -18,7 +18,6 @@
     <modules>
         <module>request-counter-application</module>
         <module>dev-container</module>
-        <module>autotests</module>
     </modules>
 
     <properties>
