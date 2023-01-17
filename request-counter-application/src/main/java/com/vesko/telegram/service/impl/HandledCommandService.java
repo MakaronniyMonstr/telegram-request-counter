@@ -1,7 +1,6 @@
 package com.vesko.telegram.service.impl;
 
 import com.vesko.telegram.handler.CommandHandler;
-import com.vesko.telegram.parser.CommandNotFoundException;
 import com.vesko.telegram.parser.NotCommandException;
 import com.vesko.telegram.parser.TelegramCommand;
 import com.vesko.telegram.parser.TelegramCommandParser;
@@ -19,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.vesko.telegram.parser.TelegramCommand.empty;
+import static com.vesko.telegram.parser.TelegramCommand.unknown;
 
 @Slf4j
 @Service
@@ -38,6 +38,7 @@ public class HandledCommandService implements CommandService {
     @Override
     public void execute(DefaultAbsSender bot, Update update) {
         var message = update.getMessage();
+
         if (message != null && message.hasText()) {
             var text = message.getText();
 
@@ -51,15 +52,11 @@ public class HandledCommandService implements CommandService {
     }
 
     private void executeCommand(DefaultAbsSender bot, Update update, TelegramCommand command) {
-        var message = update.getMessage();
-        var text = message.getText();
-
         try {
             resolveCommandHandler(command)
-                    .orElseThrow(CommandNotFoundException::new)
+                    // В случае, если введена неизвестаная команда, управление передается в UnknownCommandHandler
+                    .orElse(commandHandlerMap.get(unknown().command()))
                     .onCommand(bot, update);
-        } catch (CommandNotFoundException e) {
-            log.info("Message [{}] has unknown command", text);
         } catch (TelegramApiException e) {
             log.error("Message can not be delivered", e);
         }
