@@ -20,7 +20,7 @@ docker-compose -f .\dev-container\src\main\resources\docker-compose.yml up
 На данный момент не поддерживает автоматический запуск приложения в Docker контейнере.  
 Возможожен запуск через терминал:
 
-````\
+````
 mvn -pl request-counter-application -am package
 java -jar .\request-counter-application\target\request-counter-application-1.0-SNAPSHOT.jar --bot_key=key --default_delay=1000
 
@@ -46,3 +46,12 @@ java -jar .\request-counter-application\target\request-counter-application-1.0-S
 ### Пример 5
 Зарегестрированный пользователь отправляет echo message
 ![img.png](images/echo_message_known_user.png)
+
+### Пример 6
+Обновление времени задержки через REST API
+````
+POST http://localhost:8080/updateQueueDelay
+{
+    "new_delay": 4000 // Время в миллисекундах
+}
+````
